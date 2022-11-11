@@ -52,7 +52,7 @@ func add(x []bool, y []bool) []bool {
 		nt = or(or(and(x[i], nt), and(y[i], nt)), and(x[i], y[i]))
 
 		output[i+1] = ft
-		//fmt.Println(blToBase2(output), ft, nt);
+		fmt.Println(blToBase2(output), ft, nt);
 	}
 	output[0] = nt
 	return output;
@@ -77,7 +77,7 @@ func subtract(x []bool, y []bool)[]bool{
         ft = xor(nt, xor(x[i],y[i]));
         nt = or( and(not(x[i]), y[i]), and(xnor(x[i], y[i]), nt));
         output[i] = ft
-        //fmt.Println(blToBase2(output), ft, nt);
+        fmt.Println(blToBase2(output), ft, nt);
     }
     return output;
 }
