@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	var num1, num2 int
-	var oper, outputName string = getInput(&num1, &num2), "Output"
+	var oper, num1, num2 = getInput()
+	var outputName string = "Output"
 	var _ []bool
 	var xylen int = int(math.Ceil(math.Log2(float64(max(num1, num2))))+float64(0.1)) + 1
 	var x, y, output []bool = make([]bool, xylen), make([]bool, xylen), make([]bool, xylen+1)
@@ -33,7 +33,7 @@ func main() {
 		output = pow(x, y)
 		outputName = "Power"
 	}
-	fmt.Println(outputName + ": " + fmt.Sprint(blToInt(output)))
+	fmt.Println("\n" + outputName + ": " + fmt.Sprint(blToBase2(output)) + "(" + fmt.Sprint(blToInt(output)) + ")")
 }
 
 func not(x bool) bool          { return !x }
@@ -129,6 +129,13 @@ func blToBase2(list []bool) []int {
 			output[i] = 0
 		}
 	}
+
+	for _, ival := range output {
+		if ival == 1 {
+			break
+		}
+		output = output[1:]
+	}
 	return output
 }
 func max(x int, y int) int {
@@ -137,8 +144,29 @@ func max(x int, y int) int {
 	}
 	return x
 }
-func getInput(num1 *int, num2 *int) string {
-	// operation codes: addition = a, subtraction = s, multiplication = m, division = d, exponents = e
+func base2ToBl(list []int) []bool {
+	var output []bool = make([]bool, len(list))
+	for i, ival := range list {
+		output[i] = (ival == 1)
+	}
+	return output
+}
+func validateBase2(input int) ([]bool, bool) {
+	var output []bool =  make([]bool, int(math.Log10(float64(input))));
+	var c int = len(output);
+	for input >= 1{
+		c--;
+		if input % 10 != 0 && input % 10 != 0{
+			return []bool(nil), false;
+		}
+		output[c] = ((input % 10) == 1);
+		input -= input % 10;
+		input /= 10;
+	}
+	return output, true;
+}
+func getInput() (string, int, int) {
+	// operation codes: addition = a, subtraction = s, multiplication = m, division = d, modulus = mod, exponents = e
 	var oper string
 	for true {
 		fmt.Println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
@@ -176,20 +204,50 @@ func getInput(num1 *int, num2 *int) string {
 			break
 		}
 	}
-
+	var selection string
 	for true {
-		fmt.Println("Enter 2 numbers following the corresponding constraints in the format:\na b")
-		fmt.Scan(num1, num2)
-		if (oper == "s" || oper == "d" || oper == "mod") && *num1 < *num2 {
-			continue
-		}
-		if *num1 == 0 || *num2 == 0 {
-			continue
-		}
-		if *num1%1 == 0 && *num1 > 0 && *num2%1 == 0 && *num2 > 0 {
+		fmt.Println("Would you like to enter your numbers in (Binary or Decimal)")
+		fmt.Scan(&selection)
+		if selection == "Decimal" || selection == "Binary" {
 			break
 		}
 	}
 
-	return oper
+	var num11, num22 int
+	if selection == "Decimal" {
+		var num1, num2 int
+		for true {
+			fmt.Println("Enter 2 numbers following the corresponding constraints in the format:\na b")
+			fmt.Scan(&num1, &num2)
+			if (oper == "s" || oper == "d" || oper == "mod") && num1 < num2 {
+				continue
+			}
+			if num1 == 0 || num2 == 0 {
+				continue
+			}
+			if num1%1 == 0 && num1 > 0 && num2%1 == 0 && num2 > 0 {
+				break
+			}
+		}
+		num11 = num1
+		num22 = num2
+	}
+	if selection == "Binary" {
+		var num1, num2 int;
+		var b,d bool;
+		var a,c []bool;
+		for true {
+			fmt.Println("Enter your 2 numbers, there should be no leading 0's and each number should be seperated by a space, but digits should not")
+			fmt.Scan(&num1, &num2)
+			a, b = validateBase2(num1);
+			c, d = validateBase2(num2);
+			if b && d{
+				break;
+			}
+		}
+		num11 = blToInt(a);
+		num22 = blToInt(c);
+	}
+
+	return oper, num11, num22
 }
